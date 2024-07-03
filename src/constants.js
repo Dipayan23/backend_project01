@@ -1,0 +1,1 @@
+export const DB_NAME = "first_project_db"
