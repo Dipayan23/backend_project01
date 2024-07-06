@@ -7,7 +7,7 @@ import { ApiResponse } from "../utils/api_response.utils.js";
 const registerUser = async_handler(async (req, res) => {
   //get user detail from frontend we can get it from post man
   const { fullname, email, username, password } = req.body;
-  console.log(email);
+  //console.log(email);
   //validation
   if (
     [fullname, email, username, password].some((field) => field?.trim() === "")
@@ -15,15 +15,21 @@ const registerUser = async_handler(async (req, res) => {
     throw new ApiError(400, "All field are required");
   }
   //check user already exist or not via email and username
-  const existed_user = User.findOne({
+  const existed_user = await User.findOne({
     $or: [{ username }, { email }],
   });
   if (existed_user) {
     throw new ApiError(409, "User already exist");
   }
   //avater is available or not and also image
-  const avatarlocalPath = req.files?.avatar[0]?.path;
-  const coverlocalPath = req.files?.coverImage[0]?.path;
+  const avatarlocalPath = await req.files?.avatar[0]?.path;
+  //const coverlocalPath = await req.files?.coverImage[0]?.path;
+
+  let coverlocalPath;
+  if (req.files&&Array.isArray(req.files.coverImage)&&req.files?.coverImage.length()>0) {
+    coverlocalPath = await req.files?.coverImage[0]?.path
+  }
+
   if (!avatarlocalPath) {
     throw new ApiError(400, "Avatar is required");
   }
@@ -52,9 +58,9 @@ const registerUser = async_handler(async (req, res) => {
     throw new ApiError(500,"Something went wron while uploading.")
   }
   //return response
-  return res.status(201,json(
+  return res.status(201).json(
     new ApiResponse(200,createdUser,"User registered Succesfully.")
-  ))
+  )
 });
 
 export { registerUser };

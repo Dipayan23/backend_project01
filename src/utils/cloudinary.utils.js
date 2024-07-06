@@ -18,7 +18,8 @@ const uploadonCloudinary = async (localFlePath) => {
     const response = await cloudinary.uploader.upload(localFlePath, {
       resource_type: "auto",
     });
-    console.log("file is uploaded on cloudinary:" + response.url);
+    //console.log("file is uploaded on cloudinary:" + response.url);
+    fs.unlinkSync(localFlePath)
     return response;
   } catch (error) {
     fs.unlinkSync(localFlePath); //if file is not upload in the cloudinary we need to remove it from local device because it can contain malisious elemens

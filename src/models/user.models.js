@@ -39,7 +39,7 @@ const userSchema = new mongoose.Schema(
         ref: "Video",
       },
     ],
-    passward: {
+    password: {
       type: String,
       required: [true, "password is required"],
     },
@@ -52,15 +52,15 @@ const userSchema = new mongoose.Schema(
 
 userSchema.pre("save", async function (next) {
   if (this.isModified("password")) {
-    this.passward = await bcrypt.hash(this.passward, 10);
-    next();
+    this.password = await bcrypt.hash(this.password, 10)
+    next()
   } else {
-    return next();
+    return next()
   }
 });
 
 userSchema.methods.isPasswordCorrect = async function (passward) {
-  return await bcrypt.compare(passward, this.passward);
+  return await bcrypt.compare(password, this.password);
 };
 
 userSchema.methods.generateAccessToken = async function () {
