@@ -20,5 +20,5 @@ router.route("/register").post(
 router.route("/login").post(logInUser)
 //secure routes
 router.route("/logout").post(verifyJWT,logOutUser)
-router.route("/refresh-token").post(refrexhAcessToken)
+router.route("/refresh-token").post(refreshAcessToken)
 export default router;
