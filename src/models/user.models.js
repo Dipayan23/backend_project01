@@ -1,5 +1,5 @@
 import mongoose, { Schema } from "mongoose";
-import Jwt from "jsonwebtoken";
+import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 
 //jwt is a bearer token means whose posses this token has power to access
@@ -60,11 +60,11 @@ userSchema.pre("save", async function (next) {
 });
 
 userSchema.methods.isPasswordCorrect = async function (passward) {
-  return await bcrypt.compare(password, this.password);
+  return await bcrypt.compare(passward, this.password);
 };
 
-userSchema.methods.generateAccessToken = async function () {
-  return await Jwt.sign(
+userSchema.methods.generateAccessToken = function () {
+  return jwt.sign(
     {
       _id: this._id,
       email: this.email,
@@ -78,8 +78,8 @@ userSchema.methods.generateAccessToken = async function () {
   );
 };
 
-userSchema.methods.generateRefershToken = async function () {
-    return await Jwt.sign(
+userSchema.methods.generateRefershToken = function () {
+    return jwt.sign(
         {
           _id: this._id,
         },
