@@ -164,6 +164,7 @@ const logOutUser = async_handler(async (req, res) => {
 });
 
 const refreshAcessToken = async_handler(async (req, res) => {
+
   try {
     const incomingRefreshToken =
       req.cookies?.refreshToken || req.body.refreshToken;
@@ -206,5 +207,5 @@ const refreshAcessToken = async_handler(async (req, res) => {
     throw new ApiError(401,error)
   }
 });
-
 export { registerUser, logInUser, logOutUser,refreshAcessToken };
+
