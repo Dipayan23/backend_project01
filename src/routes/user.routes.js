@@ -1,27 +1,48 @@
 import { Router } from "express";
-import { logInUser, logOutUser, refreshAcessToken, registerUser, updateDetails, updatePassword } from "../controllers/user.controllers.js";
+import {
+  getCurrentUser,
+  getUserChannelProfile,
+  getWatchHistory,
+  logInUser,
+  logOutUser,
+  refreshAcessToken,
+  registerUser,
+  updateDetails,
+  updatePassword,
+  updateUserAvatar,
+  updateUserCoverImage,
+} from "../controllers/user.controllers.js";
 import { upload } from "../middlewares/multer.middlewares.js";
 import { verifyJWT } from "../middlewares/auth.middleware.js";
 
-const router=Router()
+const router = Router();
 router.route("/register").post(
-    upload.fields([
-        {
-            name:"avatar",
-            maxCount:1,
-        },
-        {
-            name:"coverImage",
-            maxCount:1,
-        },
-    ]),
-    registerUser)
+  upload.fields([
+    {
+      name: "avatar",
+      maxCount: 1,
+    },
+    {
+      name: "coverImage",
+      maxCount: 1,
+    },
+  ]),
+  registerUser
+);
 
-router.route("/login").post(logInUser)
+router.route("/login").post(logInUser);
 //secure routes
-router.route("/logout").post(verifyJWT,logOutUser)
-router.route("/refresh-token").post(refreshAcessToken)
-router.route("/update-password").post(verifyJWT,updatePassword)
-router.route("/update-details").post(verifyJWT,updateDetails)
-
+router.route("/logout").post(verifyJWT, logOutUser);
+router.route("/refresh-token").post(refreshAcessToken);
+router.route("/update-password").post(verifyJWT, updatePassword);
+router.route("/update-details").patch(verifyJWT, updateDetails);
+router.route("/current-user").get(verifyJWT, getCurrentUser);
+router
+  .route("/update-avatar")
+  .patch(verifyJWT, upload.single("avatar"), updateUserAvatar);
+router
+  .route("/cover-image")
+  .patch(verifyJWT, upload.single("/coverImage"), updateUserCoverImage);
+router.route("/c/:username").get(verifyJWT,getUserChannelProfile)
+router.route("/history").get(verifyJWT,getWatchHistory)
 export default router;
