@@ -146,7 +146,7 @@ const logOutUser = async_handler(async (req, res) => {
     req.user._id,
     {
       $set: {
-        refreshToken: undefined,
+        refreshToken: 1,
       },
     },
     {
@@ -228,16 +228,16 @@ const getCurrentUser = async_handler(async (req, res) => {
 });
 const updateDetails = async_handler(async (req, res) => {
   const { fullname, email } = req.body;
-  if (!fullname || !email) {
+  if (!fullname && !email) {
     throw new ApiError(402, "All fields are required");
   }
-  const user = User.findByIdAndUpdate(
+  const user = await User.findByIdAndUpdate(
     req.user?._id,
     {
       $set: {
-        fullname: fullname,
+        fullname,
         email: email,
-      },
+      }
     },
     { new: true }
   ).select("-password");
@@ -251,7 +251,7 @@ const updateUserAvatar = async_handler(async (req, res) => {
   if (!avatarlocalPath) {
     throw new ApiError(401, "You are not upload the avatar");
   }
-  const avatar = uploadonCloudinary(avatarlocalPath);
+  const avatar = await uploadonCloudinary(avatarlocalPath);
   if (!avatar.url) {
     throw new ApiError(505, "Error occurs while uploading the avatar file");
   }
@@ -271,7 +271,7 @@ const updateUserCoverImage = async_handler(async (req, res) => {
   if (!coverImagelocalPath) {
     throw new ApiError(401, "You are not upload the avatar");
   }
-  const coverImage = uploadonCloudinary(coverImagelocalPath);
+  const coverImage =await uploadonCloudinary(coverImagelocalPath);
   if (!coverImage.url) {
     throw new ApiError(505, "Error occurs while uploading the avatar file");
   }
@@ -288,8 +288,8 @@ const updateUserCoverImage = async_handler(async (req, res) => {
 });
 
 const getUserChannelProfile = async_handler(async (req, res) => {
-  const username = req.params;
-  if (!username?.trim()) {
+  const {username} = req.params;
+  if (!username?.trim) {
     throw new ApiError(404, "username not found");
   }
   const channel = await User.aggregate([
@@ -320,7 +320,7 @@ const getUserChannelProfile = async_handler(async (req, res) => {
         channelsSubscribsTo: { $size: "$subscribeTo" },
         isSubscribe: {
           $cond: {
-            if: { $in: [req.user?._id, "subscribers.subscriber"] },
+            if: { $in: [req.user?._id, "$subscribers.subscriber"] },
             then: true,
             else: false,
           },
